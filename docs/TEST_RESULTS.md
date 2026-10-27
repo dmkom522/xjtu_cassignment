@@ -14,12 +14,14 @@
 | skeleton_tests | 通过；CTest 1/1 | 输入与EOF行为 |
 | 菜单/返回/取消/退出 | 8组实际进程输入检查均通过，含嵌套菜单EOF | 程序实际交互 |
 | 占位行动不改变状态 | 实际依次选择复习/休息/娱乐/兼职/三件商品，7次均提示待实现；8次状态快照仍为三课20、精力70、压力20、金钱30，第1天早上 | 演示明确保持未实现状态 |
-| 远程干净克隆编译 | 待执行，推送后核对 | 不依赖未提交源文件 |
-| Windows/Linux CI | 待执行 | 以GitHub实际工作流结果为准 |
+| 远程干净检出编译 | GitHub Actions在两个新运行环境中checkout远程提交后，Configure/Build/CTest均成功；本地第二次克隆因网络连接失败未完成 | 远程CI不依赖本机未提交源文件；不能称为本地第二次克隆已通过 |
+| Windows/Linux CI | 两个任务均成功，见下方工作流链接 | Windows/Ubuntu的构建与已有输入测试 |
 
 8组进程检查：直接退出、主菜单EOF、非法主菜单输入后退出、计划规则页、7种占位行动保持状态、取消课程/商店/资料课程、课程选择EOF、资料课程选择EOF。每组检查进程退出码和实际输出，5秒超时保护均未触发。
 
 尚不能证明：完整15回合游戏、实际数值效果、随机抽样概率和四结局。对应代码当前仍为占位。
+
+远程CI核对的源码提交：`e7c31fb091df98f5b549c0a3217f0a19c97327b8`。工作流：[Build collaboration skeleton #40447698366](https://github.com/dmkom522/xjtu_cassignment/actions/runs/40447698366)。`build (ubuntu-latest)`与`build (windows-latest)`中的Configure、Build、Check skeleton input handling步骤均为success。此处记录的成功不是完整游戏验收。
 
 ## 后续完整游戏验收
 
