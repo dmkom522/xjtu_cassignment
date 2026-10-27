@@ -2,7 +2,7 @@
 
 #include <random>
 
-// Public interface owner: member 02. Keep declarations in this file only.
+// 2号维护：大家共用的数据、数值和函数声明。
 namespace rules {
 inline constexpr int courseCount = 3;
 inline constexpr int dayCount = 5;
@@ -28,14 +28,10 @@ inline constexpr int coffeeStressGain = 5;
 inline constexpr int snackPrice = 10;
 inline constexpr int snackEnergyGain = 5;
 inline constexpr int snackStressReduction = 20;
-inline constexpr int notesPrice = 25;
-inline constexpr int notesKnowledgeGain = 10;
 inline constexpr int nightEnergyGain = 15;
 inline constexpr int nightStressReduction = 5;
-inline constexpr int eventKnowledgeGain = 5;
 inline constexpr int eventStressGain = 4;
 inline constexpr int eventEnergyGain = 10;
-inline constexpr int eventMoneyGain = 10;
 inline constexpr int passThreshold = 60;
 inline constexpr int excellentThreshold = 80;
 inline constexpr const char* courseNames[courseCount] = {"高数", "英语", "C++"};
@@ -52,37 +48,36 @@ struct Player {
 
 enum class Ending { None, Burnout, Excellent, Pass, Retake };
 
-// 01: game flow. day is 1..5, slot is 0..2; only this module advances time.
+// 1号：把游戏串起来。day是第1～5天，slot是早/午/晚对应的0/1/2。
 void runGame();
 
-// 02: shared state. normalize is called by the game flow after each mutation.
+// 2号：把数值限制在范围内，以及每天晚上的恢复。
 void normalize(Player& player);
 void recoverAtNight(Player& player);
 
-// 03 / 04: true means success and consumes one slot; false must not change state.
-// course: 0=math, 1=English, 2=C++. Actions do not read input or print menus.
+// 3号、4号：只改数值。成功返回true；取消或没做成返回false，不扣时间。
+// course：0高数、1英语、2 C++。菜单输入已经由ui.cpp处理。
 bool study(Player& player, int course);
 bool rest(Player& player);
 bool entertain(Player& player);
 bool work(Player& player);
 
-// 05: itemId: 1=coffee, 2=snack, 3=notes. Validate everything before payment.
-// course is required only for notes, and is ignored for coffee/snack.
-bool buyItem(Player& player, int itemId, int course = -1);
+// 5号：itemId为1买咖啡、2买零食。钱够就扣钱并生效，钱不够返回false。
+bool buyItem(Player& player, int itemId);
 
-// 06: eventId: 0=none, 1=notes, 2=queue, 3=food, 4=money.
-// rollEvent: 50% none; the other four outcomes each have probability 12.5%.
+// 6号：0没事发生、1排队压力+4、2室友投喂精力+10。
+// 可以随机取0～3：0/1都表示没事，2映射为事件1，3映射为事件2。
 int rollEvent(std::mt19937& rng);
 void applyEvent(Player& player, int eventId);
 const char* eventText(int eventId);
 
-// 07: finished=false checks early failure only; finished=true also checks grades.
+// 7号：finished=false时只看有没有崩溃，true时再看三门成绩。
 Ending evaluateEnding(const Player& player, bool finished);
 void printEnding(Ending ending, const Player& player);
 
-// 08: input and display. readInt retries invalid input; EOF returns -1.
-// chooseAction: 0..5, or -1 on EOF. chooseItem: 0..3, or -1 on EOF.
-// chooseCourse: 0..2, or -1 for cancel/EOF (menu numbers are converted here).
+// 8号：显示文字。下面的输入函数和菜单已经能用，不需要重写。
+// readInt读不到输入时返回-1；chooseCourse返回0～2，取消时返回-1。
+// chooseAction返回0～5，chooseItem返回0～2，0表示返回。
 int readInt(int minValue, int maxValue);
 int chooseAction();
 int chooseCourse();

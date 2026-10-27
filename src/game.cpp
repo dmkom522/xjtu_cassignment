@@ -3,7 +3,7 @@
 #include <iostream>
 
 // Owner 01: replace the menu demonstration with the full game loop.
-// See docs/TASKS.md#成员01主流程 and docs/RULES.md for the exact sequence.
+// See member 1 in docs/TASKS.md and the short flow in docs/RULES.md.
 void runGame() {
     Player player;
     constexpr int demoDay = 1;
@@ -42,11 +42,7 @@ void runGame() {
                 if (item <= 0) {
                     continue;
                 }
-                const int course = item == 3 ? chooseCourse() : -1;
-                if (item == 3 && course < 0) {
-                    continue;
-                }
-                success = buyItem(player, item, course);
+                success = buyItem(player, item);
                 break;
             }
             default:

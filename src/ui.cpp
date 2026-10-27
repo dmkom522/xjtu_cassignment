@@ -51,8 +51,8 @@ int chooseCourse() {
 
 int chooseItem() {
     std::cout << "1.咖啡(" << rules::coffeePrice << ")  2.零食(" << rules::snackPrice
-              << ")  3.复习资料(" << rules::notesPrice << ")  0.取消\n请选择商品：";
-    return readInt(0, 3);
+              << ")  0.取消\n请选择商品：";
+    return readInt(0, 2);
 }
 
 void showStatus(const Player& player, int day, int slot) {

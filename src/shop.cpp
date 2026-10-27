@@ -1,8 +1,7 @@
 #include "game.h"
 
-// Owner 05. Validate item, optional course, and balance BEFORE any mutation.
-bool buyItem(Player& /* player */, int /* itemId */, int /* course */) {
-    // TODO(05): exactly one purchase per successful call; no inventory.
-    // On failure return false with the entire Player unchanged.
+// 5号：只卖咖啡和零食，购买后立即生效。
+bool buyItem(Player& /* player */, int /* itemId */) {
+    // TODO(05): 判断钱够不够，够就扣钱、加效果并返回true；不够返回false。
     return false;
 }
