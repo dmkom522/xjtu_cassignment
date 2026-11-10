@@ -6,7 +6,7 @@
 #include <string>
 
 // Basic input recovery is provided so the skeleton can be tested and exited.
-// Owner 08: complete layout, action/event feedback, and actual-value deltas.
+// Owner 08: status display and actual-value deltas.
 int readInt(int minValue, int maxValue) {
     if (minValue > maxValue) {
         throw std::invalid_argument("readInt: minValue > maxValue");
@@ -56,16 +56,41 @@ int chooseItem() {
 }
 
 void showStatus(const Player& player, int day, int slot) {
-    std::cout << "\n第 " << day << " 天 · 时段 " << slot << "（0早/1午/2晚）\n";
+    const char* slotName = slot >= 0 && slot < rules::slotsPerDay
+                               ? rules::slotNames[slot] : "未知时段";
+    std::cout << "\n=== 第 " << day << " / " << rules::dayCount
+              << " 天 · " << slotName << " ===\n";
     for (int course = 0; course < rules::courseCount; ++course) {
         std::cout << rules::courseNames[course] << ':' << player.knowledge[course] << "  ";
     }
     std::cout << "\n精力:" << player.energy << "  压力:" << player.stress
               << "  金钱:" << player.money << '\n';
-    // TODO(08): polish layout while retaining all values and consistent labels.
 }
 
-void showChanges(const Player& /* before */, const Player& /* after */) {
-    // TODO(08): print actual differences AFTER normalize, not configured bonuses.
-    std::cout << "[待实现/08] 行动实际数值变化\n";
+void showChanges(const Player& before, const Player& after) {
+    // The caller normalizes first; compare the actual values rather than bonuses.
+    bool changed = false;
+    std::cout << "本次变化：";
+    const auto printChange = [&changed](const char* name, int oldValue, int newValue) {
+        const int delta = newValue - oldValue;
+        if (delta == 0) {
+            return;
+        }
+        if (changed) {
+            std::cout << "  ";
+        }
+        std::cout << name << ' ' << (delta > 0 ? "+" : "") << delta;
+        changed = true;
+    };
+
+    for (int course = 0; course < rules::courseCount; ++course) {
+        printChange(rules::courseNames[course], before.knowledge[course], after.knowledge[course]);
+    }
+    printChange("精力", before.energy, after.energy);
+    printChange("压力", before.stress, after.stress);
+    printChange("金钱", before.money, after.money);
+    if (!changed) {
+        std::cout << "无数值变化";
+    }
+    std::cout << '\n';
 }
