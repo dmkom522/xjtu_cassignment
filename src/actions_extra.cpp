@@ -1,12 +1,14 @@
 #include "game.h"
 
-// Owner 04. No console input/output or day/slot updates here.
-bool entertain(Player& /* player */) {
-    // TODO(04): subtract entertainEnergyCost and entertainStressReduction.
-    return false;
+bool entertain(Player& player) {
+    player.energy -= rules::entertainEnergyCost;
+    player.stress -= rules::entertainStressReduction;
+    return true;
 }
 
-bool work(Player& /* player */) {
-    // TODO(04): add workMoneyGain, subtract workEnergyCost, add workStressGain.
-    return false;
+bool work(Player& player) {
+    player.money += rules::workMoneyGain;
+    player.energy -= rules::workEnergyCost;
+    player.stress += rules::workStressGain;
+    return true;
 }

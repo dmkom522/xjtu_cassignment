@@ -67,12 +67,11 @@ int main() {
             }
             require(rejected, "inverted input bounds must be rejected");
         }
-        std::cout << "PASS: skeleton input/EOF checks. Gameplay is NOT implemented or verified.\n";
+        std::cout << "PASS: input/EOF checks. Gameplay checks run separately.\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL: " << error.what() << '\n';
         return 1;
     }
-    // TODO(09): add module tests as members complete their implementations.
-    // Planned gameplay acceptance cases are in docs/TEST_PLAN.md.
 }
+

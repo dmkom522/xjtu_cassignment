@@ -2,16 +2,14 @@
 
 #include <iostream>
 
-// Owner 01: replace the menu demonstration with the full game loop.
-// See member 1 in docs/TASKS.md and the short flow in docs/RULES.md.
 void runGame() {
     Player player;
-    constexpr int demoDay = 1;
-    constexpr int demoSlot = 0;
-    std::cout << "\n[协作骨架演示] 行动、事件、时间推进和结局尚未实现。\n";
+    int day = 1;
+    int slot = 0;
+    std::mt19937 rng(std::random_device{}());
 
     while (true) {
-        showStatus(player, demoDay, demoSlot);
+        showStatus(player, day, slot);
         const int action = chooseAction();
         if (action <= 0) {
             return;
@@ -50,15 +48,42 @@ void runGame() {
         }
 
         if (!success) {
-            std::cout << "[待实现] 当前模块尚未产生有效行动；时间和状态保持原样。\n";
+            std::cout << "金钱不足，购买失败，不消耗时段。\n";
             continue;
         }
 
-        // TODO(01): normalize -> showChanges -> early failure -> advance slot.
-        // After a surviving evening: event -> normalize -> early failure;
-        // days 1..4 recover overnight; day 5 runs the final ending check.
         normalize(player);
         showChanges(before, player);
-        std::cout << "[待实现/01] 行动接口已返回成功，日期与结局逻辑仍需补全。\n";
+        Ending ending = evaluateEnding(player, false);
+        if (ending != Ending::None) {
+            printEnding(ending, player);
+            return;
+        }
+
+        if (slot + 1 < rules::slotsPerDay) {
+            ++slot;
+            continue;
+        }
+
+        const Player beforeEvent = player;
+        const int event = rollEvent(rng);
+        std::cout << "晚间事件：" << eventText(event) << '\n';
+        applyEvent(player, event);
+        normalize(player);
+        showChanges(beforeEvent, player);
+        // Check the event before recovery; the last evening has no recovery.
+        ending = evaluateEnding(player, day == rules::dayCount);
+        if (ending != Ending::None) {
+            printEnding(ending, player);
+            return;
+        }
+
+        const Player beforeRecovery = player;
+        recoverAtNight(player);
+        std::cout << "夜间恢复：\n";
+        showChanges(beforeRecovery, player);
+        ++day;
+        slot = 0;
     }
 }
+

@@ -34,7 +34,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Compilation failed.' }
     if ($Test) {
         & $taskCtest --test-dir $taskBuild --output-on-failure
-        if ($LASTEXITCODE -ne 0) { throw 'Skeleton tests failed.' }
+        if ($LASTEXITCODE -ne 0) { throw 'Tests failed.' }
     }
     if ($Run) {
         & (Join-Path $taskBuild 'finals_survival.exe')
@@ -43,3 +43,4 @@ try {
 } finally {
     $env:Path = $taskOriginalPath
 }
+
