@@ -5,8 +5,8 @@
 #include <stdexcept>
 #include <string>
 
-// Basic input recovery is provided so the skeleton can be tested and exited.
-// Owner 08: complete layout, action/event feedback, and actual-value deltas.
+// Invalid input is retried; EOF returns to the caller.
+// Owner 08: status display and actual-value deltas.
 int readInt(int minValue, int maxValue) {
     if (minValue > maxValue) {
         throw std::invalid_argument("readInt: minValue > maxValue");
@@ -25,14 +25,14 @@ int readInt(int minValue, int maxValue) {
 }
 
 void showWelcome() {
-    std::cout << "\n=== 期末周生存指南 · 协作骨架 ===\n"
-              << "1. 查看菜单演示（游戏逻辑待各成员实现）\n"
-              << "2. 查看计划规则\n"
+    std::cout << "\n=== 期末周生存指南 ===\n"
+              << "1. 开始游戏\n"
+              << "2. 查看规则\n"
               << "0. 退出\n请选择：";
 }
 
 void showRules() {
-    std::cout << "\n[计划规则，尚未实现]\n"
+    std::cout << "\n[游戏规则]\n"
               << "5天，每天3个时段；复习三门课，同时管理精力、压力和金钱。\n"
               << "精力归零或压力达到100提前失败；最终三课全80为学霸，全60为过关。\n"
               << "完整规则与9人分工请阅读 docs/RULES.md 和 docs/TASKS.md。\n";
@@ -56,16 +56,41 @@ int chooseItem() {
 }
 
 void showStatus(const Player& player, int day, int slot) {
-    std::cout << "\n第 " << day << " 天 · 时段 " << slot << "（0早/1午/2晚）\n";
+    const char* slotName = slot >= 0 && slot < rules::slotsPerDay
+                               ? rules::slotNames[slot] : "未知时段";
+    std::cout << "\n=== 第 " << day << " / " << rules::dayCount
+              << " 天 · " << slotName << " ===\n";
     for (int course = 0; course < rules::courseCount; ++course) {
         std::cout << rules::courseNames[course] << ':' << player.knowledge[course] << "  ";
     }
     std::cout << "\n精力:" << player.energy << "  压力:" << player.stress
               << "  金钱:" << player.money << '\n';
-    // TODO(08): polish layout while retaining all values and consistent labels.
 }
 
-void showChanges(const Player& /* before */, const Player& /* after */) {
-    // TODO(08): print actual differences AFTER normalize, not configured bonuses.
-    std::cout << "[待实现/08] 行动实际数值变化\n";
+void showChanges(const Player& before, const Player& after) {
+    // The caller normalizes first; compare the actual values rather than bonuses.
+    bool changed = false;
+    std::cout << "本次变化：";
+    const auto printChange = [&changed](const char* name, int oldValue, int newValue) {
+        const int delta = newValue - oldValue;
+        if (delta == 0) {
+            return;
+        }
+        if (changed) {
+            std::cout << "  ";
+        }
+        std::cout << name << ' ' << (delta > 0 ? "+" : "") << delta;
+        changed = true;
+    };
+
+    for (int course = 0; course < rules::courseCount; ++course) {
+        printChange(rules::courseNames[course], before.knowledge[course], after.knowledge[course]);
+    }
+    printChange("精力", before.energy, after.energy);
+    printChange("压力", before.stress, after.stress);
+    printChange("金钱", before.money, after.money);
+    if (!changed) {
+        std::cout << "无数值变化";
+    }
+    std::cout << '\n';
 }

@@ -33,4 +33,10 @@ if(BUILD_TESTING)
     target_link_libraries(skeleton_tests PRIVATE game_core)
     add_test(NAME skeleton_input_smoke COMMAND skeleton_tests)
     set_tests_properties(skeleton_input_smoke PROPERTIES TIMEOUT 10)
+
+    add_executable(gameplay_tests tests/gameplay_tests.cpp)
+    target_link_libraries(gameplay_tests PRIVATE game_core)
+    add_test(NAME gameplay_regressions COMMAND gameplay_tests)
+    set_tests_properties(gameplay_regressions PROPERTIES TIMEOUT 10)
 endif()
+

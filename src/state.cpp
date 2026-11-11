@@ -1,11 +1,19 @@
 #include "game.h"
 
-// Owner 02. State defaults and constants are declared in include/game.h.
-void normalize(Player& /* player */) {
-    // TODO(02): clamp each course, energy and stress to [0, 100]; money >= 0.
+#include <algorithm>
+
+void normalize(Player& player) {
+    for (int& knowledge : player.knowledge) {
+        knowledge = std::clamp(knowledge, 0, rules::maximumStat);
+    }
+    player.energy = std::clamp(player.energy, 0, rules::maximumStat);
+    player.stress = std::clamp(player.stress, 0, rules::maximumStat);
+    player.money = std::max(player.money, 0);
 }
 
-void recoverAtNight(Player& /* player */) {
-    // TODO(02): add nightEnergyGain, subtract nightStressReduction, normalize.
-    // Owner 01 calls this only after surviving days 1..4.
+void recoverAtNight(Player& player) {
+    player.energy += rules::nightEnergyGain;
+    player.stress -= rules::nightStressReduction;
+    normalize(player);
 }
+
